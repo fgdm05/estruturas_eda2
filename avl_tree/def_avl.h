@@ -12,4 +12,10 @@ typedef struct avl {
 	No* raiz;
 } AVL;
 
+#include <stdlib.h>
+
+AVL* criar();
+No* criarNo(No* pai, int valor);
+void adicionarNo(AVL* avl, int valor);
+
 #endif
