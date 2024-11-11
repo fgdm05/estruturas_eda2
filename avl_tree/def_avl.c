@@ -65,7 +65,6 @@ No* adicionar(Arvore* arvore, int valor) {
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore->raiz, valor);
-        printf("\nBALANCEAR");
         balanceamento(arvore, no->pai);
         return no;
     }
@@ -180,19 +179,19 @@ void balanceamento(Arvore* arvore, No* no) {
         if (fator > 1) { // arvore mais profunda para a esquerda
             printf("\nMAIS PROFUNDA A ESQUERDA");
             if (fb(no->esquerda) > 0) {
-                printf("RSD(%d)\n",no->valor);
+                printf(" RSD(%d)\n",no->valor);
                 rsd(arvore, no); 
             } else {
-                printf("RDD(%d)\n",no->valor);
+                printf(" RDD(%d)\n",no->valor);
                 rdd(arvore, no); 
             }
         } else if (fator < -1) { // arvore mais profunda a direita
             printf("\nMAIS PROFUNDA A DIREITA");
             if (fb(no->direita) < 0) {
-                printf("RSE(%d)\n",no->valor);
+                printf(" RSE(%d)\n",no->valor);
                 rse(arvore, no); 
             } else {
-                printf("RDE(%d)\n",no->valor);
+                printf(" RDE(%d)\n",no->valor);
                 rde(arvore, no);
             }
         }
@@ -287,32 +286,55 @@ void dfs(No* raiz) {
 	}
 }
 
-int main() {
+
+void test_case_rsd() {
+    printf("\nRotacao simples a direita ----------\n");
+    Arvore* a0 = criar();
+    adicionar(a0, 3);
+    adicionar(a0, 2);
+    adicionar(a0, 1);
+    dfs(a0->raiz);
+    printf("\n\n");
+}
+void test_case_rse() {
+    printf("\nRotacao simples a esquerda -----------\n");
+    Arvore* a2 = criar();
+    adicionar(a2, 1);
+    adicionar(a2, 2);
+    adicionar(a2, 3);
+    dfs(a2->raiz);
+    printf("\n\n");
+}
+void test_case_rdd() {
+    printf("\nRotacao dupla a direita -----------\n");
+    Arvore* a1 = criar();
+    adicionar(a1, 3);
+    adicionar(a1, 1);
+    adicionar(a1, 2);
+    dfs(a1->raiz);
+    printf("\n\n");
+
+}
+void test_case_rde() {
+    printf("\nRotacao dupla a esquerda ------------\n");
     Arvore* a = criar();
-    int n = 7;
-    int i;
-
+    adicionar(a, 1);
+    adicionar(a, 3);
     adicionar(a, 2);
-    adicionar(a, 4);
-    adicionar(a, 6);
-
     dfs(a->raiz);
+    printf("\n\n");
+}
 
-    remover(a, 4);
-    printf("\nREMOVER");
-    dfs(a->raiz);
+void testes() {
+    printf("\nTestes\n");
+    test_case_rse();
+    test_case_rsd();
+    test_case_rde();
+    test_case_rdd();
+}
 
-    // adicionar(a, 2);
-    // adicionar(a, 5);
-    // adicionar(a, 1);
-    // adicionar(a, 0);
-    // adicionar(a, 6);
-    // adicionar(a, 4);
-    // adicionar(a, 3);
-    
 
-    printf("In-order: ");
-    percorrer(a->raiz,visitar);
-    printf("\n");
-    printf("Altura da arvore: %d\n", altura(a->raiz));
+int main() {
+    testes();
+    return 0;
 }
