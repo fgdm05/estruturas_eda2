@@ -1,16 +1,6 @@
 #include <stdlib.h>
 #include "def_rubro_negra.h"
 
-No* criarNo(Arvore*, No*, int);
-void balancear(Arvore*, No*);
-void rotacionarEsquerda(Arvore*, No*);
-void rotacionarDireita(Arvore*, No*);
-
-Arvore* criar();
-int vazia(Arvore*);
-No* adicionar(Arvore*, int);
-No* localizar(Arvore* arvore, int valor);
-
 Arvore* criar() {
     Arvore *arvore = malloc(sizeof(Arvore));
     arvore->nulo = NULL;
