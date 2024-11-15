@@ -15,6 +15,16 @@ typedef struct no {
 typedef struct rubro_negra {
 	No* raiz;
 	No* nulo;
-} Rubro_Negra;
+} Arvore;
+
+No* criarNo(Arvore*, No*, int);
+void balancear(Arvore*, No*);
+void rotacionarEsquerda(Arvore*, No*);
+void rotacionarDireita(Arvore*, No*);
+
+Arvore* criar();
+int vazia(Arvore*);
+No* adicionar(Arvore*, int);
+No* localizar(Arvore* arvore, int valor);
 
 #endif

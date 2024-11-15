@@ -1,21 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
-
-enum coloracao { Vermelho, Preto };
-typedef enum coloracao Cor;
-
-typedef struct no {
-    struct no* pai;
-    struct no* esquerda;
-    struct no* direita;
-    Cor cor;
-    int valor;
-} No;
-
-typedef struct arvore {
-    struct no* raiz;
-    struct no* nulo; 
-} Arvore;
+#include "def_rubro_negra.h"
 
 No* criarNo(Arvore*, No*, int);
 void balancear(Arvore*, No*);
@@ -58,7 +42,6 @@ No* adicionarNo(Arvore* arvore, No* no, int valor) {
         if (no->direita == arvore->nulo) {
             no->direita = criarNo(arvore, no, valor);     
             no->direita->cor = Vermelho;       
-        		
             return no->direita;
         } else {
             return adicionarNo(arvore, no->direita, valor);
@@ -79,12 +62,10 @@ No* adicionar(Arvore* arvore, int valor) {
     if (vazia(arvore)) {
         arvore->raiz = criarNo(arvore, arvore->nulo, valor);
         arvore->raiz->cor = Preto;
-        	
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore, arvore->raiz, valor);
         balancear(arvore, no);
-        
         return no;
     }
 }
@@ -103,36 +84,6 @@ No* localizar(Arvore* arvore, int valor) {
     }
 
     return NULL;
-}
-
-void percorrerProfundidadeInOrder(Arvore* arvore, No* no, void (*callback)(int)) {
-    if (no != arvore->nulo) {
-        
-        
-        percorrerProfundidadeInOrder(arvore, no->esquerda,callback);
-        callback(no->valor);
-        percorrerProfundidadeInOrder(arvore, no->direita,callback);
-    }
-}
-
-void percorrerProfundidadePreOrder(Arvore* arvore, No* no, void (*callback)(int)) {
-    if (no != arvore->nulo) {
-        callback(no->valor);
-        percorrerProfundidadePreOrder(arvore, no->esquerda,callback);
-        percorrerProfundidadePreOrder(arvore, no->direita,callback);
-    }
-}
-
-void percorrerProfundidadePosOrder(Arvore* arvore, No* no, void (callback)(int)) {
-    if (no != arvore->nulo) {
-        percorrerProfundidadePosOrder(arvore, no->esquerda,callback);
-        percorrerProfundidadePosOrder(arvore, no->direita,callback);
-        callback(no->valor);
-    }
-}
-
-void visitar(int valor){
-    printf("%d ", valor);
 }
 
 void balancear(Arvore* arvore, No* no) {
@@ -222,20 +173,4 @@ void rotacionarDireita(Arvore* arvore, No* no) {
     
     esquerda->direita = no;
     no->pai = esquerda;
-}
-
-int main() {
-    Arvore* a = criar();
-
-    adicionar(a,7);
-    adicionar(a,6);
-    adicionar(a,5);
-    adicionar(a,4);
-    adicionar(a,3);
-    adicionar(a,2);
-    adicionar(a,1);
-
-    printf("In-order: ");
-    percorrerProfundidadeInOrder(a, a->raiz,visitar);
-    printf("\n");
 }
