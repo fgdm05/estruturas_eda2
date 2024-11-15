@@ -1,17 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-typedef struct no {
-    struct no* pai;
-    struct no* esquerda;
-    struct no* direita;
-    int valor;
-    int altura;
-} No;
-
-typedef struct arvore {
-    struct no* raiz;
-} Arvore;
+#include "def_avl.h"
 
 void balanceamento(Arvore*, No*);
 int altura(No*);
@@ -25,7 +14,6 @@ No* criarNo(No*, int);
 Arvore* criar() {
     Arvore *arvore = malloc(sizeof(Arvore));
     arvore->raiz = NULL;
-  
     return arvore;
 }
 
@@ -61,7 +49,6 @@ No* adicionar(Arvore* arvore, int valor) {
     if (vazia(arvore)) {
         printf("Adicionando %d\n",valor);
         arvore->raiz = criarNo(NULL, valor);
-			
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore->raiz, valor);
@@ -69,7 +56,6 @@ No* adicionar(Arvore* arvore, int valor) {
         return no;
     }
 }
-
 
 No* removerNo(No* no, int valor) {
     if(valor < no->valor) {
@@ -284,57 +270,4 @@ void dfs(No* raiz) {
 		dfs(raiz->esquerda);
 		dfs(raiz->direita);
 	}
-}
-
-
-void test_case_rsd() {
-    printf("\nRotacao simples a direita ----------\n");
-    Arvore* a0 = criar();
-    adicionar(a0, 3);
-    adicionar(a0, 2);
-    adicionar(a0, 1);
-    dfs(a0->raiz);
-    printf("\n\n");
-}
-void test_case_rse() {
-    printf("\nRotacao simples a esquerda -----------\n");
-    Arvore* a2 = criar();
-    adicionar(a2, 1);
-    adicionar(a2, 2);
-    adicionar(a2, 3);
-    dfs(a2->raiz);
-    printf("\n\n");
-}
-void test_case_rdd() {
-    printf("\nRotacao dupla a direita -----------\n");
-    Arvore* a1 = criar();
-    adicionar(a1, 3);
-    adicionar(a1, 1);
-    adicionar(a1, 2);
-    dfs(a1->raiz);
-    printf("\n\n");
-
-}
-void test_case_rde() {
-    printf("\nRotacao dupla a esquerda ------------\n");
-    Arvore* a = criar();
-    adicionar(a, 1);
-    adicionar(a, 3);
-    adicionar(a, 2);
-    dfs(a->raiz);
-    printf("\n\n");
-}
-
-void testes() {
-    printf("\nTestes\n");
-    test_case_rse();
-    test_case_rsd();
-    test_case_rde();
-    test_case_rdd();
-}
-
-
-int main() {
-    testes();
-    return 0;
 }
