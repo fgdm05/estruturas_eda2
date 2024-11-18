@@ -1,17 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-typedef struct no {
-    struct no* pai;
-    struct no* esquerda;
-    struct no* direita;
-    int valor;
-    int altura;
-} No;
-
-typedef struct arvore {
-    struct no* raiz;
-} Arvore;
+#include "def_avl.h"
 
 void balanceamento(Arvore*, No*);
 int altura(No*);
@@ -25,7 +14,6 @@ No* criarNo(No*, int);
 Arvore* criar() {
     Arvore *arvore = malloc(sizeof(Arvore));
     arvore->raiz = NULL;
-  
     return arvore;
 }
 
@@ -61,16 +49,13 @@ No* adicionar(Arvore* arvore, int valor) {
     if (vazia(arvore)) {
         printf("Adicionando %d\n",valor);
         arvore->raiz = criarNo(NULL, valor);
-			
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore->raiz, valor);
-        printf("\nBALANCEAR");
         balanceamento(arvore, no->pai);
         return no;
     }
 }
-
 
 No* removerNo(No* no, int valor) {
     if(valor < no->valor) {
@@ -180,19 +165,19 @@ void balanceamento(Arvore* arvore, No* no) {
         if (fator > 1) { // arvore mais profunda para a esquerda
             printf("\nMAIS PROFUNDA A ESQUERDA");
             if (fb(no->esquerda) > 0) {
-                printf("RSD(%d)\n",no->valor);
+                printf(" RSD(%d)\n",no->valor);
                 rsd(arvore, no); 
             } else {
-                printf("RDD(%d)\n",no->valor);
+                printf(" RDD(%d)\n",no->valor);
                 rdd(arvore, no); 
             }
         } else if (fator < -1) { // arvore mais profunda a direita
             printf("\nMAIS PROFUNDA A DIREITA");
             if (fb(no->direita) < 0) {
-                printf("RSE(%d)\n",no->valor);
+                printf(" RSE(%d)\n",no->valor);
                 rse(arvore, no); 
             } else {
-                printf("RDE(%d)\n",no->valor);
+                printf(" RDE(%d)\n",no->valor);
                 rde(arvore, no);
             }
         }
@@ -285,34 +270,4 @@ void dfs(No* raiz) {
 		dfs(raiz->esquerda);
 		dfs(raiz->direita);
 	}
-}
-
-int main() {
-    Arvore* a = criar();
-    int n = 7;
-    int i;
-
-    adicionar(a, 2);
-    adicionar(a, 4);
-    adicionar(a, 6);
-
-    dfs(a->raiz);
-
-    remover(a, 4);
-    printf("\nREMOVER");
-    dfs(a->raiz);
-
-    // adicionar(a, 2);
-    // adicionar(a, 5);
-    // adicionar(a, 1);
-    // adicionar(a, 0);
-    // adicionar(a, 6);
-    // adicionar(a, 4);
-    // adicionar(a, 3);
-    
-
-    printf("In-order: ");
-    percorrer(a->raiz,visitar);
-    printf("\n");
-    printf("Altura da arvore: %d\n", altura(a->raiz));
 }
