@@ -1,6 +1,8 @@
 #ifndef DEF_ARVORE_B
 #define DEF_ARVORE_B
 
+#include <stdlib.h>
+
 typedef struct no {
 	int total;
 	int* chaves;
@@ -12,5 +14,7 @@ typedef struct arvoreB {
 	No* raiz;
 	int ordem;
 } ArvoreB;
+
+ArvoreB* criaArvore(int ordem);
 
 #endif
