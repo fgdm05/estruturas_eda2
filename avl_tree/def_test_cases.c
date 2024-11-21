@@ -81,6 +81,24 @@ void test_case_3b() {
     dfs(a->raiz);
 }
 
+void heavyTest(int n){
+    srand(time(NULL));
+    Arvore *a0 = criar();
+    int v[n];
+    for(int i = 0; i < n; i++){
+        v[i] = rand() % ((int)1e9);
+        adicionar(a0,v[i]);
+    }
+    printf("%i\n",altura(a0->raiz));
+    for(int i = 0; i < n; i++){
+        int j = rand()%n;
+        remover(a0,v[j]);
+    }
+    
+    printf("%i\n",altura(a0->raiz));
+    return;
+}
+
 void test_case_a() {
     printf("\nTESTE A\n");
     Arvore* a = criar();

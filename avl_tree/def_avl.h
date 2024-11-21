@@ -1,6 +1,7 @@
 #ifndef DEF_AVL
 #define DEF_AVL
 
+
 typedef struct no {
     struct no* pai;
     struct no* esquerda;
@@ -14,11 +15,14 @@ typedef struct arvore {
 } Arvore;
 
 Arvore* criar();
+int max(int a, int b);
 int vazia(Arvore* arvore);
 No* adicionaNo(No* no, int valor);
 No* adicionar(Arvore* arvore, int valor);
-No* removerNo(No* no, int valor);
+No* removerNo(No* no, int valor, Arvore* av);
 No* remover(Arvore* arvore, int valor);
+No* deleteLeaf(No* no, int esq, Arvore* av);
+No* deleteSingle(No* no, int esq, Arvore* av);
 No* criarNo(No* pai, int valor);
 No* localizar(No* no, int valor);
 void percorrer(No* no, void (*callback)(int));

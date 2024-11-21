@@ -20,97 +20,126 @@ Arvore* criar() {
 int vazia(Arvore* arvore) {
     return arvore->raiz == NULL;
 }
-
+int max(int a,int b){
+    if(a>b) return b;
+    return a;
+}
 No* adicionarNo(No* no, int valor) {
     if (valor > no->valor) {
         if (no->direita == NULL) {
-            printf("Adicionando %d\n",valor);
+            // printf("Adicionando %d\n",valor);
             No* novo = criarNo(no, valor);
             no->direita = novo;
-				
             return novo;
         } else {
             return adicionarNo(no->direita, valor);
         }
-    } else {
+    } else if (valor < no->valor){
         if (no->esquerda == NULL) {
-            printf("Adicionando %d\n",valor);
+            // printf("Adicionando %d\n",valor);
             No* novo = criarNo(no, valor);
             no->esquerda = novo;
-			
             return novo;
         } else {
-            return adicionarNo(no->esquerda, valor);
+            return adicionarNo(no->esquerda, valor); 
         }
+    }else{
+        // printf("Valor ja existe!\n");
+        return NULL;
     }
 }
 
 No* adicionar(Arvore* arvore, int valor) {
     if (vazia(arvore)) {
-        printf("Adicionando %d\n",valor);
+        // printf("Adicionando %d\n",valor);
         arvore->raiz = criarNo(NULL, valor);
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore->raiz, valor);
-        balanceamento(arvore, no->pai);
+        balanceamento(arvore, no);
         return no;
     }
 }
 
-No* removerNo(No* no, int valor) {
+No* removerNo(No* no, int valor, Arvore* av) {
     if(valor < no->valor) {
         if(no->esquerda == NULL) {
-            printf("\nValor inexistente");
+            // printf("\nValor inexistente");
             return NULL;
         } else {
-            return removerNo(no->esquerda, valor);
-        }
+            return removerNo(no->esquerda, valor,av);
+        }  
     } else if(valor > no->valor) {
         if(no->direita == NULL) {
-            printf("\nValor inexistente");
+            // printf("\nValor inexistente");
             return NULL;
         } else {
-            return removerNo(no->direita, valor);
+            return removerNo(no->direita, valor,av);;
         }
     } else {
         // Destruir no
         // caso tenha filhos, colocar um como pai
         No* pai = no->pai;
-        if(pai != NULL) {
-            if(valor < no-pai) {
-                // filho a esquerda
-                if(no->esquerda != NULL) {
-                    no->esquerda->pai = pai;
-                    pai->esquerda = no->esquerda;
-                } else if(no->direita != NULL) {
-                    no->direita->pai = pai;
-                    pai->esquerda = no->direita;
-                } else {
-                    pai->esquerda = NULL;
-                }
-            } else {
-                // filho a direita
-                if(no->esquerda != NULL) {
-                    no->esquerda->pai = pai;
-                    pai->direita = no->esquerda;
-                } else if(no->direita != NULL) {
-                    no->direita->pai = pai;
-                    pai->direita = no->direita;
-                } else {
-                    pai->direita = NULL;
-                }    
-            }
-        }
+        int esq = 0;
+        if(pai!=NULL) esq = valor < pai->valor;
+
+        if(no->direita==NULL&&no->esquerda==NULL)
+            return deleteLeaf(no,esq,av);
+
+        if(no->direita==NULL||no->esquerda==NULL)
+            return deleteSingle(no,esq,av);
+        
+        // Logo o nodo a ser deletado tem dois filhos
+        No* tgt = no->direita;
+        while(tgt->esquerda!=NULL) tgt = tgt->esquerda; // Sucessor a direita        
+        no->valor = tgt->valor;
+        
+        pai = tgt->pai;
+        esq = tgt->valor < pai->valor;
+        
+        if(tgt->direita==NULL&&tgt->esquerda==NULL)
+            return deleteLeaf(tgt,esq,av);
+        return deleteSingle(tgt,esq,av);
+
     }
 }
 
+No* deleteLeaf(No* no, int esq, Arvore* av){
+    No* pai = no->pai;
+    free(no);
+    if(pai==NULL){
+        av->raiz=NULL;
+        return NULL;
+    }
+    if(esq) pai->esquerda = NULL;
+    else pai->direita = NULL;
+    return pai;
+}
+
+No* deleteSingle(No* no, int esq, Arvore* av){
+    No* pai = no->pai;
+    No* tgt;
+    if(no->direita==NULL) tgt = no->esquerda;
+    else tgt = no->direita;
+    tgt->pai = pai;
+
+    if(pai!=NULL)
+        if(esq) pai->esquerda = tgt;
+        else pai->direita = tgt;
+    else av->raiz = tgt;
+    free(no);
+    return tgt;
+}
+
+
 No* remover(Arvore* arvore, int valor) {
+    // printf("\nRemovendo %i\n",valor);
     if(vazia(arvore)) {
-        printf("\nArvore vazia");
+        // printf("\nArvore vazia");
         return NULL;
     } else {
-        No* no = removerNo(arvore->raiz, valor);
-        printf("\nBALANCEAR");
+        No* no = removerNo(arvore->raiz, valor,arvore);
+        // printf("\nBALANCEAR");
         balanceamento(arvore, no);
     }
 }
@@ -119,6 +148,7 @@ No* criarNo(No* pai, int valor) {
     No* no = malloc(sizeof(No));
     no->valor = valor;
     no->pai = pai;
+    no->altura=1;
     no->esquerda = NULL;
     no->direita = NULL;
     return no;
@@ -156,44 +186,39 @@ void visitar(int valor){
 
 void balanceamento(Arvore* arvore, No* no) {
     while (no != NULL) {
+        no->altura = max(altura(no->esquerda),altura(no->direita))+1;
         int fator = fb(no);
-
-        no->altura = (altura(no->esquerda) > altura(no->direita)
-			? altura(no->esquerda) 
-			: altura(no->direita)) + 1;	
+            
 
         if (fator > 1) { // arvore mais profunda para a esquerda
-            printf("\nMAIS PROFUNDA A ESQUERDA");
+            // printf("\nMAIS PROFUNDA A ESQUERDA");
             if (fb(no->esquerda) > 0) {
-                printf(" RSD(%d)\n",no->valor);
+                // printf(" RSD(%d)\n",no->valor);
                 rsd(arvore, no); 
             } else {
-                printf(" RDD(%d)\n",no->valor);
+                // printf(" RDD(%d)\n",no->valor);
                 rdd(arvore, no); 
             }
         } else if (fator < -1) { // arvore mais profunda a direita
-            printf("\nMAIS PROFUNDA A DIREITA");
+            // printf("\nMAIS PROFUNDA A DIREITA");
             if (fb(no->direita) < 0) {
-                printf(" RSE(%d)\n",no->valor);
+                // printf(" RSE(%d)\n",no->valor);
                 rse(arvore, no); 
             } else {
-                printf(" RDE(%d)\n",no->valor);
+                // printf(" RDE(%d)\n",no->valor);
                 rde(arvore, no);
             }
         }
+        
+        no->altura = max(altura(no->esquerda),altura(no->direita))+1;
         no = no->pai; 
     }
 }
 
 int altura(No* no){
-	if (no == NULL) {
+	if (no == NULL) 
 		return 0;
-	}
-	
-    int esquerda = altura(no->esquerda);
-    int direita = altura(no->direita);
-    
-    return esquerda > direita ? esquerda + 1 : direita + 1;
+    return no->altura;	
 }
 
 int fb(No* no) {
@@ -223,6 +248,8 @@ No* rse(Arvore* arvore, No* no) {
             pai->direita = direita;
         }
     }
+    
+    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
 
     return direita;
 }
@@ -250,23 +277,25 @@ No* rsd(Arvore* arvore, No* no) {
             pai->direita = esquerda;
         }
     }
-
+    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
     return esquerda;
 }
 
 No* rde(Arvore* arvore, No* no) {
     no->direita = rsd(arvore, no->direita);
+    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
     return rse(arvore, no);
 }
 
 No* rdd(Arvore* arvore, No* no) {
     no->esquerda = rse(arvore, no->esquerda);
+    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
     return rsd(arvore, no);
 }
 
 void dfs(No* raiz) {
 	if(raiz != NULL) {
-		printf("%d ", raiz->valor);
+		// printf("%d ", raiz->valor);
 		dfs(raiz->esquerda);
 		dfs(raiz->direita);
 	}
