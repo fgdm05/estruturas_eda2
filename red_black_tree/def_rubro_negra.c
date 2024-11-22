@@ -165,16 +165,3 @@ void rotacionarDireita(Arvore* arvore, No* no) {
     no->pai = esquerda;
 }
 
-void removerNo(No* no, int valor, Arvore* arvore) {
-    
-}
-
-void remover(Arvore* arvore, int valor) {
-    if(vazia(arvore)) {
-        printf("\nArvore vazia");
-        return;
-    } else {
-        No* no = removerNo(arvore->raiz, valor, arvore);
-        
-    }
-}
