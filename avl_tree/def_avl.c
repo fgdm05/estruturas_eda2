@@ -17,12 +17,25 @@ Arvore* criar() {
     return arvore;
 }
 
+void clear(Arvore* arvore){
+    clearNode(arvore->raiz);
+    free(arvore);
+}
+
+void clearNode(No* no){
+    if(no==NULL) return;
+    clearNode(no->esquerda);
+    clearNode(no->direita);
+    free(no);
+}
+
+
 int vazia(Arvore* arvore) {
     return arvore->raiz == NULL;
 }
 int max(int a,int b){
-    if(a>b) return b;
-    return a;
+    if(a>b) return a;
+    return b;
 }
 No* adicionarNo(No* no, int valor) {
     if (valor > no->valor) {
@@ -56,6 +69,7 @@ No* adicionar(Arvore* arvore, int valor) {
         return arvore->raiz;
     } else {
         No* no = adicionarNo(arvore->raiz, valor);
+        upHeight(no);
         balanceamento(arvore, no);
         return no;
     }
@@ -140,6 +154,7 @@ No* remover(Arvore* arvore, int valor) {
     } else {
         No* no = removerNo(arvore->raiz, valor,arvore);
         // printf("\nBALANCEAR");
+        upHeight(no);
         balanceamento(arvore, no);
     }
 }
@@ -186,10 +201,7 @@ void visitar(int valor){
 
 void balanceamento(Arvore* arvore, No* no) {
     while (no != NULL) {
-        no->altura = max(altura(no->esquerda),altura(no->direita))+1;
         int fator = fb(no);
-            
-
         if (fator > 1) { // arvore mais profunda para a esquerda
             // printf("\nMAIS PROFUNDA A ESQUERDA");
             if (fb(no->esquerda) > 0) {
@@ -209,10 +221,15 @@ void balanceamento(Arvore* arvore, No* no) {
                 rde(arvore, no);
             }
         }
-        
-        no->altura = max(altura(no->esquerda),altura(no->direita))+1;
+        upHeight(no);
         no = no->pai; 
     }
+}
+
+void upHeight(No* no){
+    if(no==NULL) return;
+    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
+    upHeight(no->pai);
 }
 
 int altura(No* no){
@@ -249,8 +266,7 @@ No* rse(Arvore* arvore, No* no) {
         }
     }
     
-    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
-
+    upHeight(no);
     return direita;
 }
 
@@ -277,19 +293,19 @@ No* rsd(Arvore* arvore, No* no) {
             pai->direita = esquerda;
         }
     }
-    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
+    upHeight(no);
     return esquerda;
 }
 
 No* rde(Arvore* arvore, No* no) {
     no->direita = rsd(arvore, no->direita);
-    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
+    upHeight(no);
     return rse(arvore, no);
 }
 
 No* rdd(Arvore* arvore, No* no) {
     no->esquerda = rse(arvore, no->esquerda);
-    no->altura = max(altura(no->esquerda),altura(no->direita))+1;
+    upHeight(no);
     return rsd(arvore, no);
 }
 

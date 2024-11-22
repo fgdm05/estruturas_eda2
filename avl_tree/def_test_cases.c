@@ -96,6 +96,7 @@ void heavyTest(int n){
     }
     
     printf("%i\n",altura(a0->raiz));
+    clear(a0);
     return;
 }
 

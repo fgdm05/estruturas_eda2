@@ -8,8 +8,8 @@ int main() {
     // test_case_rsd();
     // test_case_rde();
     // test_case_rdd();
-    int at = time(NULL);
-    heavyTest((int)5e5);
-    printf("ACABOU, durou %i\n", at-time(NULL));
+    int at = (int)time(NULL);
+    heavyTest((int)1e6);
+    printf("ACABOU, durou %i\n", (int)time(NULL)-at);
     return 0;
 }
