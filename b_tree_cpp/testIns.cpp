@@ -7,13 +7,18 @@ void printVec(std::vector<int> inp){
 }
 
 int main(){
-    ArvoreB arv(1);
+    ArvoreB arv(2);
 
-    for(int i = 0; i < 15; i++){
+    for(int i = 0; i < 10; i++){
         int a;
         std::cin >> a;
         arv.insert(a);
-        std::cout << arv.count(a) << std::endl;
+    }
+    for(int i = 0; i < 10; i++){
+        int a;
+        std::cin >> a;
+        arv.erase(a);
+        arv.print();
     }
     std::cout << "STOP";
 }
