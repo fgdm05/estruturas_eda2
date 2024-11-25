@@ -9,6 +9,6 @@ void test_case_rsd();
 void test_case_rse();
 void test_case_rdd();
 void test_case_rde();
-void heavyTest(int n);
+void heavyTest(int n, double*, double*, int*, int*);
 
 #endif

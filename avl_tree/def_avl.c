@@ -2,22 +2,22 @@
 #include <stdio.h>
 #include "def_avl.h"
 
-void balanceamento(Arvore*, No*);
+void balanceamento(AVL*, No*, int*);
 int altura(No*);
 int fb(No*);
-No* rsd(Arvore*, No*);
-No* rse(Arvore*, No*);
-No* rdd(Arvore*, No*);
-No* rde(Arvore*, No*);
-No* criarNo(No*, int);
+No* rsd(AVL*, No*, int*);
+No* rse(AVL*, No*, int*);
+No* rdd(AVL*, No*, int*);
+No* rde(AVL*, No*, int*);
+No* criarNoAVL(No*, int);
 
-Arvore* criar() {
-    Arvore *arvore = malloc(sizeof(Arvore));
+AVL* criarAVL() {
+    AVL *arvore = malloc(sizeof(AVL));
     arvore->raiz = NULL;
     return arvore;
 }
 
-void clear(Arvore* arvore){
+void clear(AVL* arvore){
     clearNode(arvore->raiz);
     free(arvore);
 }
@@ -30,7 +30,7 @@ void clearNode(No* no){
 }
 
 
-int vazia(Arvore* arvore) {
+int vazia(AVL* arvore) {
     return arvore->raiz == NULL;
 }
 int max(int a,int b){
@@ -40,8 +40,7 @@ int max(int a,int b){
 No* adicionarNo(No* no, int valor) {
     if (valor > no->valor) {
         if (no->direita == NULL) {
-            // printf("Adicionando %d\n",valor);
-            No* novo = criarNo(no, valor);
+            No* novo = criarNoAVL(no, valor);
             no->direita = novo;
             return novo;
         } else {
@@ -49,8 +48,8 @@ No* adicionarNo(No* no, int valor) {
         }
     } else if (valor < no->valor){
         if (no->esquerda == NULL) {
-            // printf("Adicionando %d\n",valor);
-            No* novo = criarNo(no, valor);
+
+            No* novo = criarNoAVL(no, valor);
             no->esquerda = novo;
             return novo;
         } else {
@@ -58,24 +57,23 @@ No* adicionarNo(No* no, int valor) {
         }
     }else{
         // printf("Valor ja existe!\n");
-        return NULL;
-    }
-}
-
-No* adicionar(Arvore* arvore, int valor) {
-    if (vazia(arvore)) {
-        // printf("Adicionando %d\n",valor);
-        arvore->raiz = criarNo(NULL, valor);
-        return arvore->raiz;
-    } else {
-        No* no = adicionarNo(arvore->raiz, valor);
-        upHeight(no);
-        balanceamento(arvore, no);
         return no;
     }
 }
 
-No* removerNo(No* no, int valor, Arvore* av) {
+No* adicionar(AVL* arvore, int valor, int* ops) {
+    if (vazia(arvore)) {
+        arvore->raiz = criarNoAVL(NULL, valor);
+        return arvore->raiz;
+    } else {
+        No* no = adicionarNo(arvore->raiz, valor);
+        upHeight(no);
+        balanceamento(arvore, no, ops);
+        return no;
+    }
+}
+
+No* removerNo(No* no, int valor, AVL* av) {
     if(valor < no->valor) {
         if(no->esquerda == NULL) {
             // printf("\nValor inexistente");
@@ -118,7 +116,7 @@ No* removerNo(No* no, int valor, Arvore* av) {
     }
 }
 
-No* deleteLeaf(No* no, int esq, Arvore* av){
+No* deleteLeaf(No* no, int esq, AVL* av){
     No* pai = no->pai;
     free(no);
     if(pai==NULL){
@@ -130,7 +128,7 @@ No* deleteLeaf(No* no, int esq, Arvore* av){
     return pai;
 }
 
-No* deleteSingle(No* no, int esq, Arvore* av){
+No* deleteSingle(No* no, int esq, AVL* av){
     No* pai = no->pai;
     No* tgt;
     if(no->direita==NULL) tgt = no->esquerda;
@@ -146,7 +144,7 @@ No* deleteSingle(No* no, int esq, Arvore* av){
 }
 
 
-No* remover(Arvore* arvore, int valor) {
+No* remover(AVL* arvore, int valor, int* ops) {
     // printf("\nRemovendo %i\n",valor);
     if(vazia(arvore)) {
         // printf("\nArvore vazia");
@@ -155,11 +153,11 @@ No* remover(Arvore* arvore, int valor) {
         No* no = removerNo(arvore->raiz, valor,arvore);
         // printf("\nBALANCEAR");
         upHeight(no);
-        balanceamento(arvore, no);
+        balanceamento(arvore, no, ops);
     }
 }
 
-No* criarNo(No* pai, int valor) {
+No* criarNoAVL(No* pai, int valor) {
     No* no = malloc(sizeof(No));
     no->valor = valor;
     no->pai = pai;
@@ -169,17 +167,17 @@ No* criarNo(No* pai, int valor) {
     return no;
 }
 
-No* localizar(No* no, int valor) {
+No* localizarAVL(No* no, int valor) {
     if (no->valor == valor) {
         return no;
     } else {
         if (valor < no->valor) {
             if (no->esquerda != NULL) {
-                return localizar(no->esquerda, valor);
+                return localizarAVL(no->esquerda, valor);
             }
         } else {
             if (no->direita != NULL) {
-                return localizar(no->direita, valor);
+                return localizarAVL(no->direita, valor);
             }
         }
     }
@@ -199,26 +197,20 @@ void visitar(int valor){
     printf("%d ", valor);
 }
 
-void balanceamento(Arvore* arvore, No* no) {
+void balanceamento(AVL* arvore, No* no, int* ops) {
     while (no != NULL) {
         int fator = fb(no);
         if (fator > 1) { // arvore mais profunda para a esquerda
-            // printf("\nMAIS PROFUNDA A ESQUERDA");
             if (fb(no->esquerda) > 0) {
-                // printf(" RSD(%d)\n",no->valor);
-                rsd(arvore, no); 
+                rsd(arvore, no, ops); 
             } else {
-                // printf(" RDD(%d)\n",no->valor);
-                rdd(arvore, no); 
+                rdd(arvore, no, ops);
             }
         } else if (fator < -1) { // arvore mais profunda a direita
-            // printf("\nMAIS PROFUNDA A DIREITA");
             if (fb(no->direita) < 0) {
-                // printf(" RSE(%d)\n",no->valor);
-                rse(arvore, no); 
+                rse(arvore, no, ops);
             } else {
-                // printf(" RDE(%d)\n",no->valor);
-                rde(arvore, no);
+                rde(arvore, no, ops);
             }
         }
         upHeight(no);
@@ -242,7 +234,8 @@ int fb(No* no) {
     return altura(no->esquerda) - altura(no->direita);
 }
 
-No* rse(Arvore* arvore, No* no) {
+No* rse(AVL* arvore, No* no, int* ops) {
+    (*ops)+=1;
     No* pai = no->pai;
     No* direita = no->direita;
 
@@ -270,7 +263,8 @@ No* rse(Arvore* arvore, No* no) {
     return direita;
 }
 
-No* rsd(Arvore* arvore, No* no) {
+No* rsd(AVL* arvore, No* no, int* ops) {
+    (*ops)+=1;
     No* pai = no->pai;
     No* esquerda = no->esquerda;
 
@@ -297,16 +291,18 @@ No* rsd(Arvore* arvore, No* no) {
     return esquerda;
 }
 
-No* rde(Arvore* arvore, No* no) {
-    no->direita = rsd(arvore, no->direita);
+No* rde(AVL* arvore, No* no, int* ops) {
+    (*ops)+=2;
+    no->direita = rsd(arvore, no->direita, ops);
     upHeight(no);
-    return rse(arvore, no);
+    return rse(arvore, no, ops);
 }
 
-No* rdd(Arvore* arvore, No* no) {
-    no->esquerda = rse(arvore, no->esquerda);
+No* rdd(AVL* arvore, No* no, int* ops) {
+    (*ops)+=2;
+    no->esquerda = rse(arvore, no->esquerda, ops);
     upHeight(no);
-    return rsd(arvore, no);
+    return rsd(arvore, no, ops);
 }
 
 void dfs(No* raiz) {
