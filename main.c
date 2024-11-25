@@ -2,6 +2,10 @@
 #include "red_black_tree/def_test_cases.h"
 #include <math.h>
 
+void guardarDados(FILE* file, int n, int ops) {
+    fprintf(file, "%d;%d\n", n, ops);
+}
+
 void somar(int* ops_m, int* ops, int series) {
     for(int j = 0; j < series; j++)
         ops_m[j] += ops[j];
@@ -28,14 +32,14 @@ void calcularCaso(int n, int i_precisao, int casas) {
         somar(ops_m, ops, series);
     }
     dividir(ops_m, i_precisao, series);
-    fprintf(avl_ins, "%d;%d\n",n, ops_m[0]);
-    fprintf(avl_rem, "%d;%d\n",n,ops_m[1]);
-    fprintf(rb_ins, "%d;%d\n",n,ops_m[2]);
-    fprintf(rb_rem, "%d;%d\n",n,ops_m[3]);
-    printf("\nAVL insert %d", ops_m[0]);
-    printf("\nAVL remove %d", ops_m[1]);
-    printf("\nRB insert %d", ops_m[2]);
-    printf("\nRB remove %d", ops_m[3]);
+    guardarDados(avl_ins, n, ops_m[0]);
+    guardarDados(avl_rem, n, ops_m[1]);
+    guardarDados(rb_ins, n, ops_m[2]);
+    guardarDados(rb_rem, n, ops_m[3]);
+    printf("Insert AVL: %d (operacoes)\n", ops_m[0]);
+    printf("Remove AVL: %d (operacoes)\n", ops_m[1]);
+    printf("Insert RB: %d (operacoes)\n", ops_m[2]);
+    printf("Remove RB: %d (operacoes)\n", ops_m[3]);
     fclose(avl_ins);
     fclose(avl_rem);
     fclose(rb_ins);
@@ -45,15 +49,15 @@ void calcularCaso(int n, int i_precisao, int casas) {
 int main() {
     
     int a = 1, b = (int)1e4; // intervalo [1, 1e4]
-    
     int casos = 100;         // quantidade de casos tera
+    int h = b/casos;         // espaco entre casos
     int i_precisao = 10;     // quantidade de repeticoes de cada caso
     int casas = 3;           // quantidade de casas decimais
     
-    int h = b/casos;
     for(int i = 0; i <= casos; i++) {
         int n = a+h*i;
-        printf("\n----------------------------\nCaso nodos = %i\n", n);
+        printf("\n----------------------------");
+        printf("\nCaso nodos = %i\n", n);
         calcularCaso(n, i_precisao, casas);
     }
 
