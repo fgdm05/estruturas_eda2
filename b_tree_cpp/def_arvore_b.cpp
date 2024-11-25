@@ -5,6 +5,7 @@ ArvoreB::ArvoreB(int ordem)
 {
     ArvoreB::ordem = ordem;
     raiz = new No(NULL, ordem);
+    ops = 0;
 }
 
 No::No(No *p, int ordem)
@@ -60,9 +61,9 @@ void No::insertNode(No *no)
     chaves.insert(it, no->chaves[0]);
     free(no);
 }
-
 void ArvoreB::overflow(No *tgt)
 {
+    ops++;
     auto& cv = tgt->chaves;
     auto p = tgt->pai;
     int upVal = cv[cv.size() / 2];
@@ -100,7 +101,7 @@ void ArvoreB::insert(int val)
     if (pos < cv.size() && val == cv[pos])
         return; // Valor já existe
     (*tgt).insertKey(val);
-    
+    ops+=cv.size()-pos;
     if (cv.size() == 2 * ordem+1)
         overflow(tgt); // Splita nodo
     

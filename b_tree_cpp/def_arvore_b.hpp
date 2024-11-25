@@ -19,7 +19,7 @@ struct ArvoreB {
 	No* raiz;
 	int ordem;
 	
-	
+	int ops;
 	ArvoreB(int ordem);
 	// ~ArvoreB();
 	No* find(int val);
