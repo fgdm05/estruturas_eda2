@@ -2,38 +2,40 @@
 #include "red_black_tree/def_test_cases.h"
 #include <math.h>
 
+void somar(int* ops_m, int* ops, int series) {
+    for(int j = 0; j < series; j++)
+        ops_m[j] += ops[j];
+}
+
+void dividir(int* ops_m, int i_precisao, int series) {
+    for(int j = 0; j < series; j++)
+        ops_m[j] /= i_precisao;
+}
+
 // O caso sera calculado i_precisao vezes para obter uma media
 void calcularCaso(int n, int i_precisao, int casas) {
     FILE* avl_ins = fopen("avl_ins.csv","a");
     FILE* avl_rem = fopen("avl_rem.csv","a");
     FILE* rb_ins = fopen("rb_ins.csv","a");
     FILE* rb_rem = fopen("rb_rem.csv","a");
-    int ops_ins_avl_m = 0;
-    int ops_rem_avl_m = 0;
-    int ops_ins_rb_m = 0;
-    int ops_rem_rb_m = 0;
+    int series = 4;
+    int* ops_m = (int*) calloc(series, sizeof(int));
+
     for(int i = 0; i < i_precisao; i++) {
-        int ops_ins_avl = 0, ops_rem_avl = 0; 
-        int ops_ins_rb = 0, ops_rem_rb = 0;       
-        heavyTest(n, &ops_ins_avl, &ops_rem_avl);
-        heavyTest_rb(n, &ops_ins_rb, &ops_rem_rb);
-        ops_ins_avl_m += ops_ins_avl;
-        ops_rem_avl_m += ops_rem_avl;
-        ops_ins_rb_m += ops_ins_rb;
-        ops_rem_rb_m += ops_rem_rb;
+        int* ops = (int*) calloc(series, sizeof(int));      
+        heavyTest(n, ops, ops + 1);
+        heavyTest_rb(n, ops + 2, ops + 3);
+        somar(ops_m, ops, series);
     }
-    ops_ins_avl_m /= i_precisao;
-    ops_rem_avl_m /= i_precisao;
-    ops_ins_rb_m /= i_precisao;
-    ops_rem_rb_m /= i_precisao;
-    fprintf(avl_ins, "%d;%d\n",n,ops_ins_avl_m);
-    fprintf(avl_rem, "%d;%d\n",n,ops_rem_avl_m);
-    fprintf(rb_ins, "%d;%d\n",n,ops_ins_rb_m);
-    fprintf(rb_rem, "%d;%d\n",n,ops_rem_rb_m);
-    printf("\nAVL insert %d", ops_ins_avl_m);
-    printf("\nAVL remove %d", ops_rem_avl_m);
-    printf("\nRB insert %d", ops_ins_rb_m);
-    printf("\nRB remove %d", ops_rem_rb_m);
+    dividir(ops_m, i_precisao, series);
+    fprintf(avl_ins, "%d;%d\n",n, ops_m[0]);
+    fprintf(avl_rem, "%d;%d\n",n,ops_m[1]);
+    fprintf(rb_ins, "%d;%d\n",n,ops_m[2]);
+    fprintf(rb_rem, "%d;%d\n",n,ops_m[3]);
+    printf("\nAVL insert %d", ops_m[0]);
+    printf("\nAVL remove %d", ops_m[1]);
+    printf("\nRB insert %d", ops_m[2]);
+    printf("\nRB remove %d", ops_m[3]);
     fclose(avl_ins);
     fclose(avl_rem);
     fclose(rb_ins);
