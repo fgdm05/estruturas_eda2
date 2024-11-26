@@ -126,8 +126,10 @@ No* ArvoreB::findErasable(No* no,int val){
         int i = std::lower_bound(cv.begin(), cv.end(), val) - cv.begin();
         if (i < cv.size() && cv[i] == val)
             return no;
-        prev = no;
-        no = no->filhos[i];
+        if(no->filhos[i]->chaves.size()>ordem){
+            prev = no;
+            no = no->filhos[i];
+        }else return no;
     }
     return prev;
 }
@@ -160,6 +162,11 @@ void ArvoreB::deleteInternalNode(No* tgt, int i){
         tgt->chaves.erase(tgt->chaves.begin()+i);
         tgt->filhos.erase(tgt->filhos.begin()+i+1);
         delete(rt);
+        if(tgt->chaves.size()==0){
+            lf->pai = tgt->pai;
+            delete(tgt);
+            if(lf->pai==NULL) raiz=lf;
+        }
         erase(raiz,val);
     }
 }
@@ -174,6 +181,10 @@ void ArvoreB::erase(No* tgt,int val){
     if(tgt->filhos[0]==NULL){ // Implica que é uma folha 
         tgt->chaves.erase(it);
         tgt->filhos.pop_back();
+        if(tgt->chaves.empty()){
+            raiz = NULL;
+            delete(tgt);
+        } 
         return;
     }
     // Não é uma folha, logo é um nodo interno.
@@ -197,7 +208,8 @@ void ArvoreB::erase(No* tgt,int val){
         No* rs = tgt->filhos[i+1];
         while(*rs->filhos.begin()!=NULL) rs = *rs->filhos.begin();
         int succ = *rs->chaves.begin();
-        f->insertKey(tgt->chaves[i]);
+        f->chaves.push_back(tgt->chaves[i]);
+        f->filhos.push_back(NULL);
         tgt->chaves[i]=succ;
         erase(rs,succ);
         erase(tgt,val);
@@ -207,12 +219,13 @@ void ArvoreB::erase(No* tgt,int val){
         if(i-1<0){
             sib = tgt->filhos[i+1];
             merge(f,sib,tgt,i);
+            sib = f;
         }
         else{ 
             sib = tgt->filhos[i-1];
             merge(sib,f,tgt,i-1);
         }
-        erase(raiz,val);
+        erase(sib,val);
     }
 
 
