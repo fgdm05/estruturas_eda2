@@ -12,7 +12,7 @@ No* rde(AVL*, No*, int*);
 No* criarNoAVL(No*, int);
 
 AVL* criarAVL() {
-    AVL *arvore = malloc(sizeof(AVL));
+    AVL *arvore = (AVL*)malloc(sizeof(AVL));
     arvore->raiz = NULL;
     return arvore;
 }
@@ -154,11 +154,12 @@ No* remover(AVL* arvore, int valor, int* ops) {
         // printf("\nBALANCEAR");
         upHeight(no);
         balanceamento(arvore, no, ops);
+        return no;
     }
 }
 
 No* criarNoAVL(No* pai, int valor) {
-    No* no = malloc(sizeof(No));
+    No* no = (No*)malloc(sizeof(No));
     no->valor = valor;
     no->pai = pai;
     no->altura=1;

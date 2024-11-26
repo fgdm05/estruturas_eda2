@@ -1,0 +1,2 @@
+Como compilar main.cpp:
+g++ main.cpp avl_tree/def_avl.c avl_tree/def_test_cases.c red_black_tree/def_rubro_negra.c red_black_tree/def_test_cases.c b_tree_cpp/def_arvore_b.cpp b_tree_cpp/def_test_cases.cpp -o main.exe -g
